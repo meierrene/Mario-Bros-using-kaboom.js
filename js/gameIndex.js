@@ -1,20 +1,19 @@
-// import kaboom from '/node_modules/kaboom/dist/kaboom.mjs'; // Offline support
-import kaboom from 'https://unpkg.com/kaboom/dist/kaboom.mjs';
+// import kaboom from 'https://unpkg.com/kaboom/dist/kaboom.mjs';  // Online support
+import kaboom from '/node_modules/kaboom/dist/kaboom.mjs'; // Offline support
 import { maps, levelCfg } from './mapConfig.js';
 import * as controlProperties from './controlProperties.js';
 
-let canSquash = false;
-let isJumping = true;
-let isBig = false;
-let isAlive = true;
-let isInvincible = false;
+//=========================================================================
+// Global Variables and loadSound
+//=========================================================================
+
 let SPEED = controlProperties.WALK_SPEED;
+export let isBig = false;
+let isJumping = false;
+let isInvincible = false;
 let level = 0;
 let score = 0;
 let levelMusic;
-
-controlProperties.canvas.width = window.screen.width;
-// controlProperties.canvas.height = window.screen.height;
 
 kaboom({
   canvas: controlProperties.canvas,
@@ -23,6 +22,8 @@ kaboom({
   background: [0, 0, 0, 1],
   fullscreen: true,
 });
+
+debug.inspect = false;
 
 loadRoot('./src/audios/');
 loadSound('jump0', 'jump0.wav');
@@ -42,13 +43,14 @@ loadSound('mushroom_appears', 'mushroom_appears.wav');
 
 loadRoot('./src/img/');
 loadAseprite('mario', 'Mario.png', 'Mario.json');
+loadAseprite('enemies', 'Enemies.png', 'Enemies.json');
 loadSprite('bg1', 'bg1.png');
 loadSprite('cloud', 'cloud.png');
 loadSprite('hill', 'hill.png');
 loadSprite('shrubbery', 'shrubbery.png');
 loadSprite('coin', 'coin.png');
-loadSprite('evil-shroom', 'evil-shroom.png');
-loadSprite('evil-shroom-cave', 'evil-shroom-cave.png');
+// loadSprite('evil-shroom', 'evil-shroom.png');
+// loadSprite('evil-shroom-cave', 'evil-shroom-cave.png');
 loadSprite('brick', 'brick.png');
 loadSprite('cobblestone', 'cobblestone.png');
 loadSprite('brick-cave', 'brick-cave.png');
@@ -57,16 +59,17 @@ loadSprite('mushroom', 'mushroom.png');
 loadSprite('surprise', 'surprise-block.png');
 loadSprite('surprise-cave', 'surprise-block-cave.png');
 loadSprite('unboxed', 'unboxed.png');
-loadSprite('pipe-top-left', 'pipe-top-left.png');
-loadSprite('pipe-top-right', 'pipe-top-right.png');
-loadSprite('pipe-bottom-left', 'pipe-bottom-left.png');
-loadSprite('pipe-bottom-right', 'pipe-bottom-right.png');
+loadSprite('pipe', 'pipe.png');
 loadSprite('castle', 'castle.png');
 
 function stopMusic(music) {
   music.pause();
   music.currentTime = 0;
 }
+
+//=========================================================================
+// Scene configuration
+//=========================================================================
 
 scene('game', (level, score) => {
   function updateScore(coins = 0, level) {
@@ -92,7 +95,6 @@ scene('game', (level, score) => {
   function playerState() {
     isBig ? player.bigger() : player.smaller();
   }
-
   playerState();
 
   function invincibility() {
@@ -102,6 +104,24 @@ scene('game', (level, score) => {
       controlProperties.INVINCIBILITY_TIME_INTERVAL
     );
   }
+
+  function toLose() {
+    if (isBig) {
+      controlProperties.secretBtn.checked ? play('test') : play('power_down');
+      player.smaller();
+      isBig = false;
+      invincibility();
+    } else if (isInvincible) return;
+    else {
+      stopMusic(levelMusic);
+      controlProperties.secretBtn.checked ? play('test') : play('death');
+      go('lose', { score: scoreLabel.value });
+    }
+  }
+
+  //=========================================================================
+  // Collision detection logic
+  //=========================================================================
 
   player.onHeadbutt(obj => {
     if (obj.is('coin-surprise')) {
@@ -141,53 +161,19 @@ scene('game', (level, score) => {
   });
 
   player.onCollide('dangerous', d => {
-    if (d.isAlive == false) return;
     if (isJumping || !player.isGrounded()) {
       player.bump();
       play('stomp');
       destroy(d);
-    } else if (isBig) {
-      //Toggle secret btn!
-      controlProperties.secretBtn.checked ? play('test') : play('power_down');
-      player.smaller();
-      isBig = false;
-      invincibility();
-    } else if (isInvincible) return;
-    else {
-      stopMusic(levelMusic);
-      controlProperties.secretBtn.checked ? play('test') : play('death');
-      // player.die();
-      isAlive = false;
-      go('lose', { score: scoreLabel.value });
-    }
+    } else toLose();
   });
-
-  player.onUpdate(() => {
-    const currCam = camPos();
-    if (currCam.x < player.pos.x) camPos(player.pos.x, currCam.y);
-    if (player.pos.y >= controlProperties.FALL_DEATH) {
-      stopMusic(levelMusic);
-      controlProperties.secretBtn.checked ? play('test') : play('death');
-
-      isAlive = false;
-      go('lose', { score: scoreLabel.value });
-    }
-  });
-
-  function keyDown() {
-    stopMusic(levelMusic);
-    play('pipe');
-    // if (level === maps.length - 1) {
-    // } else
-    nextLevel(level + 1, scoreLabel.value);
-  }
 
   player.onCollide('pipe', () => {
     onKeyPress(controlProperties.GO_DOWN_KEY, () => {
-      keyDown();
+      stopMusic(levelMusic);
+      play('pipe');
+      nextLevel(level + 1, scoreLabel.value);
     });
-
-    controlProperties.GO_DOWN_KEY_TS.addEventListener('mousedown', keyDown);
   });
 
   player.onCollide('castle', () => {
@@ -196,70 +182,74 @@ scene('game', (level, score) => {
     go('win', { score: scoreLabel.value });
   });
 
-  function keyLeft() {
+  //=========================================================================
+  // Player script & frames
+  //=========================================================================
+
+  player.onUpdate(() => {
+    const currCam = camPos();
+    if (currCam.x < player.pos.x) camPos(player.pos.x, currCam.y);
+    if (player.pos.y >= controlProperties.FALL_DEATH) {
+      isBig = false;
+      toLose();
+    }
+    if (player.isFrozen) {
+      player.standing();
+    }
+    if (!player.isGrounded()) {
+      player.jumping();
+      isJumping = true;
+    } else {
+      isJumping = false;
+      if (
+        isKeyDown(controlProperties.GO_LEFT_KEY) ||
+        isKeyDown(controlProperties.GO_RIGHT_KEY)
+      ) {
+        player.running();
+      } else if (isKeyDown(controlProperties.GO_DOWN_KEY)) {
+        player.ducking();
+      } else {
+        player.standing();
+      }
+    }
+  });
+
+  //=========================================================================
+  // Key Commands behaaviour
+  //=========================================================================
+
+  onKeyDown(controlProperties.GO_LEFT_KEY, () => {
     if (player.isFrozen) return;
     player.flipX(true);
     if (toScreen(player.pos).x > 20) player.move(-SPEED, 0);
-  }
-
-  function keyRight() {
-    if (player.isFrozen) return;
-    player.flipX(false);
-    player.move(SPEED, 0);
-  }
-
-  function keyJump() {
-    if (player.isGrounded()) {
-      play(`jump${randi(0, 2)}`, { volume: 0.5 });
-      isJumping = true;
-      if (isBig) player.jump(controlProperties.BIG_JUMP_FORCE);
-      else player.jump(controlProperties.JUMP_FORCE);
-      canSquash = true;
-    }
-  }
-
-  onKeyDown(controlProperties.GO_LEFT_KEY, () => {
-    keyLeft();
   });
 
   onKeyDown(controlProperties.GO_RIGHT_KEY, () => {
-    keyRight();
+    if (player.isFrozen) return;
+    player.flipX(false);
+    player.move(SPEED, 0);
   });
 
   onKeyPress(controlProperties.JUMP_KEY, () => {
-    keyJump();
+    if (player.isGrounded()) {
+      play(`jump${randi(0, 2)}`, { volume: 0.5 });
+      if (isBig) player.jump(controlProperties.BIG_JUMP_FORCE);
+      else player.jump(controlProperties.JUMP_FORCE);
+    }
   });
-
-  controlProperties.GO_LEFT_KEY_TS.addEventListener('mousedown', keyLeft);
-  controlProperties.GO_RIGHT_KEY_TS.addEventListener('mousedown', keyRight);
-  controlProperties.JUMP_KEY_TS.addEventListener('mousedown', keyJump);
 
   onKeyDown(controlProperties.RUN_KEY, () => {
-    SPEED = controlProperties.RUN_SPEED;
-  });
-
-  controlProperties.RUN_KEY_TS.addEventListener('mousedown', () => {
     SPEED = controlProperties.RUN_SPEED;
   });
 
   onKeyRelease(controlProperties.RUN_KEY, () => {
     SPEED = controlProperties.WALK_SPEED;
   });
-
-  controlProperties.RUN_KEY_TS.addEventListener('mouseup', () => {
-    SPEED = controlProperties.RUN_SPEED;
-  });
-
-  player.onUpdate(() => {
-    if (player.isGrounded()) {
-      isJumping = false;
-    }
-  });
-
-  if (player.grounded()) {
-    canSquash = false;
-  }
 });
+
+//=========================================================================
+// lose
+//=========================================================================
 
 scene('lose', ({ score }) => {
   isBig = false;
@@ -269,8 +259,11 @@ scene('lose', ({ score }) => {
     Game over!
     Your score was: ${score} coin${score === 1 ? '' : 's'}.
     `;
-  isAlive = true;
 });
+
+//=========================================================================
+// Win
+//=========================================================================
 
 scene('win', ({ score }) => {
   const gameCompleted = ((score / controlProperties.TOTAL_COINS) * 100).toFixed(
@@ -291,6 +284,10 @@ scene('win', ({ score }) => {
     }`;
 });
 
+//=========================================================================
+// Pause
+//=========================================================================
+
 function toggleInfo() {
   play('pause');
   controlProperties.helpContainer.classList.toggle('hidden');
@@ -301,8 +298,11 @@ controlProperties.resetBtn.addEventListener('click', function () {
   init();
 });
 
+//=========================================================================
+// Init
+//=========================================================================
+
 function init() {
-  // controlProperties.canvas.style.zIndex = 5;
   controlProperties.helpIcon.addEventListener('click', toggleInfo);
   controlProperties.closeModal.addEventListener('click', toggleInfo);
   controlProperties.overlay.addEventListener('click', toggleInfo);
@@ -312,16 +312,9 @@ function init() {
     'click',
     () => {
       nextLevel();
-      // if (window.innerWidth < 1200)
-      //   controlProperties.canvas.requestFullscreen();
     },
     { once: true }
   );
-  // onClick(() => {
-  // go('game', level, score);
-  // controlProperties.resetBtn.classList.remove('hidden');
-  // controlProperties.canvas.style.zIndex = 0;
-  // })
 }
 
 function nextLevel(levelGame = 0, scoreGame = 0) {
@@ -346,6 +339,9 @@ function nextLevel(levelGame = 0, scoreGame = 0) {
   }, 1500);
 }
 
+document.querySelector(
+  '.version'
+).innerHTML = `Version ${controlProperties.gameVersion}`;
 document.querySelector('.aYear').innerHTML = new Date().getFullYear();
 
 init();

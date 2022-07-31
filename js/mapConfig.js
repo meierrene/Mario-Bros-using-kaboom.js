@@ -1,7 +1,9 @@
-import { mario, bump, enemy, patrol } from './gameScript.js';
+import { bump, enemy, patrol } from './gameScript.js';
+import { mario, goomba, goombaCave } from './sprites.js';
 
 export const maps = [
   [
+    // '                                                                         ',
     '                                                                         ',
     '                                                                         ',
     '           l        l               l             l       l            l ',
@@ -12,16 +14,15 @@ export const maps = [
     '                                                                         ',
     '                                                                         ',
     '                                                                         ',
-    '                                                                         ',
     '                     =*==%=                                              ',
     '                                                                         ',
-    '                                                  $$$$$$$              -+',
-    'k    $$$$$      k   j      j        j  ^ ^k^ ^ ^ ^$$$$$$$  j        k  ()',
+    '                                                  $$$$$$$                ',
+    'k    $$$$$      k   j      j        j  ^ ^k^ ^ ^ ^$$$$$$$  j        k   -',
     'ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
     'ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
   ],
   [
-    '                                                                         ',
+    // '                                                                         ',
     '                                                                         ',
     '                                                                         ',
     '                                                                         ',
@@ -34,8 +35,8 @@ export const maps = [
     '                                      vvv                                ',
     '                    ***%***                                              ',
     '                                !!                       v               ',
-    '                                !!                      vvv            -+',
-    '     $$$$$         @   @        !!                     vvvvv    $$$$$$ ()',
+    '                                !!                      vvv              ',
+    '     $$$$$         @   @        !!                     vvvvv    $$$$$$  -',
     '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                 !!!!!!!!!!!!!!!!!!!!!!',
     '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                 !!!!!!!!!!!!!!!!!!!!!!',
   ],
@@ -53,8 +54,8 @@ export const maps = [
     '                                                  vvvvv                  ',
     '                                          !!!!    vvvvv    $$$           ',
     '                                %!!!              vvvvv    vvv   $$$     ',
-    '     $$$                                          vvvvv          vvv   -+',
-    '     $$$                 @    @                   vvvvv                ()',
+    '     $$$                                          vvvvv          vvv     ',
+    '     $$$                 @    @                   vvvvv                 -',
     '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    !!!!!!!!!!!!!                !!',
     '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!    !!!!!!!!!!!!!                !!',
   ],
@@ -71,8 +72,8 @@ export const maps = [
     '                                                                       $$',
     '                $$$                                                    $$',
     '          %     vvv                                                    $$',
-    '  $$$$$                                                                -+',
-    '  $$$$$@  @                                                            ()',
+    '  $$$$$                                                                  ',
+    '  $$$$$@  @                                                             -',
     '!!!!!!!!!!!!!!!!                                                       !!',
     '!!!!!!!!!!!!!!!!                                                       !!',
   ],
@@ -113,10 +114,15 @@ export const levelCfg = {
     'coin',
   ],
   '}': () => [sprite('unboxed'), bump(), area(), solid()],
-  '-': () => [sprite('pipe-top-left'), area(), solid(), scale(0.5), 'pipe'],
-  '+': () => [sprite('pipe-top-right'), area(), solid(), scale(0.5), 'pipe'],
-  '(': () => [sprite('pipe-bottom-left'), area(), solid(), scale(0.5)],
-  ')': () => [sprite('pipe-bottom-right'), area(), solid(), scale(0.5)],
+  '-': () => [
+    sprite('pipe'),
+    area(),
+    pos(-20, -20),
+    solid(),
+    scale(0.5),
+    'pipe',
+  ],
+
   p: () => [
     sprite('mario'),
     area(),
@@ -128,23 +134,26 @@ export const levelCfg = {
     'player',
   ],
   '^': () => [
-    sprite('evil-shroom'),
+    sprite('enemies'),
+    goomba(),
     area(),
     solid(),
     body(),
     enemy(),
     patrol(100),
+    scale(1.1),
     z(1),
     'dangerous',
   ],
   '@': () => [
-    sprite('evil-shroom-cave'),
+    sprite('enemies'),
+    goombaCave(),
     area(),
     solid(),
     body(),
     enemy(),
     patrol(100),
-    scale(0.5),
+    scale(1.1),
     z(1),
     'dangerous',
   ],
@@ -176,3 +185,15 @@ export const levelCfg = {
   k: () => [sprite('hill'), pos(0, 20), scale(2), origin('bot'), z(-2)],
   l: () => [sprite('cloud'), scale(2), z(-2)],
 };
+
+function getCoins(selMap) {
+  const query = selMap.join('').trim().split('');
+  let amountCoins = 0;
+  query.forEach(q => {
+    q === '*' ? amountCoins++ : '';
+    q === '$' ? amountCoins++ : '';
+  });
+  return amountCoins;
+}
+
+export const totalAmount = getCoins(maps);

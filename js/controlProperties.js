@@ -1,3 +1,6 @@
+import { totalAmount } from './mapConfig.js';
+
+export const gameVersion = 1.3;
 export const coinValue = document.querySelector('.coin-value');
 export const levelValue = document.querySelector('.level-value');
 export const resetContainer = document.querySelector('.reset-container');
@@ -27,4 +30,4 @@ export const GO_RIGHT_KEY_TS = document.querySelector('.key-right');
 export const GO_DOWN_KEY_TS = document.querySelector('.key-down');
 export const JUMP_KEY_TS = document.querySelector('.key-jump');
 export const RUN_KEY_TS = document.querySelector('.key-run');
-export const TOTAL_COINS = 150;
+export const TOTAL_COINS = totalAmount;
