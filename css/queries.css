@@ -23,20 +23,14 @@
 /* BELOW 600px (Phones) */
 /******************************************************************************/
 @media (max-width: 37.5em) {
-  .game-screen {
-    display: none;
-  }
-
   .low-res-screen {
     z-index: 4;
     display: block;
   }
-
-  .controls {
-    display: none;
-  }
-
-  .game-header {
+  .game-screen,
+  .controls,
+  .game-header,
+  .reset-text {
     display: none;
   }
 }

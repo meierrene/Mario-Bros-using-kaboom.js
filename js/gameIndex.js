@@ -1,5 +1,5 @@
-// import kaboom from 'https://unpkg.com/kaboom/dist/kaboom.mjs';  // Online support
-import kaboom from '/node_modules/kaboom/dist/kaboom.mjs'; // Offline support
+// import kaboom from '/node_modules/kaboom/dist/kaboom.mjs'; // Offline support
+import kaboom from 'https://unpkg.com/kaboom/dist/kaboom.mjs'; // Online support
 import { maps, levelCfg } from './mapConfig.js';
 import * as controlProperties from './controlProperties.js';
 
