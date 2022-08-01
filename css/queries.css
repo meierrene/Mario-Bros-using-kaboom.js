@@ -26,11 +26,14 @@
   .low-res-screen {
     z-index: 4;
     display: block;
+    text-align: center;
+    font-size: 1.2rem;
   }
   .game-screen,
   .controls,
   .game-header,
-  .reset-text {
+  .reset-text,
+  footer {
     display: none;
   }
 }

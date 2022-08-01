@@ -245,6 +245,7 @@ scene('game', (level, score) => {
   onKeyRelease(controlProperties.RUN_KEY, () => {
     SPEED = controlProperties.WALK_SPEED;
   });
+  console.log(window.screen.width > 600);
 });
 
 //=========================================================================
@@ -311,7 +312,7 @@ function init() {
   document.querySelector('body').addEventListener(
     'click',
     () => {
-      nextLevel();
+      if (window.screen.width > 600) nextLevel();
     },
     { once: true }
   );

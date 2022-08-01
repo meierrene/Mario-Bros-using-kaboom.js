@@ -14,6 +14,7 @@ export const canvas = document.querySelector('.game-screen');
 export const loadingScreen = document.querySelector('.loading-screen');
 export const loadingContent = document.querySelector('.loading-content');
 export const secretBtn = document.querySelector('.secret-btn');
+export const lowResScreen = document.querySelector('.low-res-screen');
 export const JUMP_FORCE = 550;
 export const BIG_JUMP_FORCE = 650;
 export const WALK_SPEED = 120;
