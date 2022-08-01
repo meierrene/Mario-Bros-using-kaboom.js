@@ -83,7 +83,7 @@ scene('game', (level, score) => {
 
   layers(['bg', 'obj', 'ui'], 'obj');
 
-  if (level === 0 || level === 4)
+  if (level === 0 || level === 4 || level === 5)
     add([sprite('bg1'), layer('bg'), pos((0, 0)), scale(2)]);
 
   levelMusic.play();
@@ -330,7 +330,7 @@ function nextLevel(levelGame = 0, scoreGame = 0) {
     if (levelMusic) stopMusic(levelMusic);
 
     levelMusic = new Audio(
-      levelGame === 0 || levelGame === 4
+      levelGame === 0 || levelGame === 4 || level === 5
         ? './src/audios/levelGround.mp3'
         : './src/audios/levelCave.mp3'
     );

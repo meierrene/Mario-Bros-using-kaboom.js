@@ -3,7 +3,6 @@ import { mario, goomba, goombaCave } from './sprites.js';
 
 export const maps = [
   [
-    // '                                                                         ',
     '                                                                         ',
     '                                                                         ',
     '           l        l               l             l       l            l ',
@@ -22,7 +21,6 @@ export const maps = [
     'ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
   ],
   [
-    // '                                                                         ',
     '                                                                         ',
     '                                                                         ',
     '                                                                         ',
@@ -41,7 +39,6 @@ export const maps = [
     '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!                 !!!!!!!!!!!!!!!!!!!!!!',
   ],
   [
-    '                                                                         ',
     '                                                                         ',
     '                                                                         ',
     '                                                                         ',
@@ -85,16 +82,33 @@ export const maps = [
     '                                                                                                                                                                                                                                                                   ',
     '                                                                                                                                                                                                                                                                   ',
     '                                                                                                                                                                                                                                                                   ',
-    '                                                                                                                                                                                                                                                                   ',
     '                                                                                                    $$$                                                                                                                                                            ',
     '                                                                                            $$$     ccc     ccc                                                                                                                                                    ',
     '                                                                                     $$$    ccc                                      j                                                                      ccc        ccc                                         ',
     '                     ****%*                                                   $$$    ccc                                          ***%*******                                                                                                           $$$$$      ',
     '                                        c  c                                  ccc                                                                               ccc       ccc                    ccc                                                    $$$$$      ',
     '                                       cc  cc            c   c         $$$                                                                           ccc                             ccc                                                                $$$$$      ',
-    '    k    j        k   j  ^  ^  ^k     ccc  ccc          cc   cc        ccc                                                  j  ^ k       j^                                                                                         k  j  ^ ^ ^ ^k^ ^  j$$$$$k    H',
+    '    k    j        k   j  ^  ^  ^k     ccc  ccc          cc   cc        ccc                                                  j  ^ k       j^                                                                                         k  j  ^ ^ ^ ^k^ ^  j$$$$$k    -',
     'ccccccccccccccccccccccccccccccccccccccccc  ccccc      cccc   ccccc                                                        cccccccccccccccccccccc                                                                             cccccccccccccccccccccccccccccccccccccc',
     'ccccccccccccccccccccccccccccccccccccccccc  ccccc      cccc   ccccc                                                        cccccccccccccccccccccc                                                                             cccccccccccccccccccccccccccccccccccccc',
+  ],
+  [
+    '                                                                                                                                                                                   ',
+    '                                                                                                                                                                                   ',
+    '          l        l               l             l       l            l           l        l               l             ',
+    '                                                                                                                         ',
+    '                                                                                                                         ',
+    '                                                                                                                         ',
+    '                                                                                                                         ',
+    '                                                                                                                         ',
+    '                                                                                                                         ',
+    '                                                                                                                         ',
+    '                                                                                                                         ',
+    '                                                                                                                         ',
+    '                                                                                                                         ',
+    '    k            k^ ^ ^ ^j^ ^ ^ ^ ^k^ ^ ^ ^j^ ^ ^ ^k^ ^ ^k^ ^ ^ ^j^ ^ ^ ^ ^ ^k^ ^ ^j^k^ ^ ^   j  ^ ^ ^ ^k^ ^  j     k   H',
+    'ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
+    'ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
   ],
 ];
 
